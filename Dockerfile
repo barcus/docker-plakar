@@ -1,11 +1,12 @@
-FROM alpine:3.15 as builder
+FROM golang:1.18.1-alpine3.15 as builder
 
 LABEL maintainer="barcus@tou.nu"
 
-ARG BUILD_DATE
-ARG NAME
-ARG VCS_REF
-ARG VERSION
+ARG BUILD_DATE NAME VCS_REF VERSION
+ARG TARGETOS TARGETARCH
+ARG UPX_VERSION=3.96
+ARG UPX_URL=https://github.com/upx/upx/releases/download
+ARG PLAKAR_VERSION=6fd56c6
 
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.build-date=$BUILD_DATE \
@@ -17,22 +18,28 @@ LABEL org.label-schema.schema-version="1.0" \
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # Install go and upx
-RUN apk add --no-cache go upx
+RUN apk add --no-cache  build-base
+RUN wget ${UPX_URL}/v${UPX_VERSION}/upx-${UPX_VERSION}-${TARGETARCH}_${TARGETOS}.tar.xz \
+    -O /tmp/upx.tar.xz \
+ && tar -xf /tmp/upx.tar.xz -C /usr/local/bin
 
 # Configure Go
-ENV GOOS linux
-ENV GOARCH amd64
-ENV GOROOT /usr/lib/go
-ENV GOPATH /go
-ENV PATH /go/bin:$PATH
-RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
+#ENV GOROOT /usr/lib/go
+#ENV GOPATH /go
+#ENV PATH /go/bin:$PATH
+#RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
 
+# Build and install plakar
 WORKDIR /app
 COPY . /app
-RUN go install -ldflags="-w -s" -v github.com/poolpOrg/plakar/cmd/plakar@6fd56c6
-RUN upx /go/bin/plakar
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH \
+ go install -ldflags="-w -s" -v github.com/poolpOrg/plakar/cmd/plakar@${PLAKAR_VERSION}
 
-FROM alpine:3.8
+# Run upx on plakar
+RUN /usr/local/bin/upx-${UPX_VERSION}-${TARGETARCH}_${TARGETOS}/upx /go/bin/plakar
+
+# Build final image
+FROM alpine:3.15
 ARG USER=plakar
 ENV HOME /home/$USER
 
