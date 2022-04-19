@@ -46,14 +46,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: barcus/plakar:latest
 
-jobs:
-  dockerhub:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Update Docker Hub description
+      -
+        name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v2.1.0
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
