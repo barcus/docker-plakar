@@ -47,4 +47,4 @@ RUN chown $USER /usr/bin/plakar /docker-entrypoint.sh \
 
 USER $USER
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["plakar"]
+CMD ["plakar", "-help"]
