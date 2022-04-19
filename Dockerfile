@@ -3,7 +3,7 @@ FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
 
 LABEL maintainer="barcus@tou.nu"
 
-ARG PLAKAR_VERSION=6fd56c6
+ARG PLAKAR_VERSION=main
 ARG TARGETOS TARGETARCH
 
 # Install build base and upx
