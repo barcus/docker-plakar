@@ -1,55 +1,50 @@
-FROM golang:1.18.1-alpine3.15 as builder
+# Build plakar from golang image
+FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
 
 LABEL maintainer="barcus@tou.nu"
 
-ARG BUILD_DATE NAME VCS_REF VERSION
-ARG TARGETOS TARGETARCH
-ARG UPX_VERSION=3.96
-ARG UPX_URL=https://github.com/upx/upx/releases/download
 ARG PLAKAR_VERSION=6fd56c6
+ARG TARGETOS TARGETARCH
 
-LABEL org.label-schema.schema-version="1.0" \
-      org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name=$NAME \
-      org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.vcs-url="https://github.com/barcus/docker-plakar" \
-      org.label-schema.version=$VERSION
+# Install build base and upx
+RUN apk add --no-cache build-base upx
 
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+# Install linux musl cross for arm64 compil 
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+ wget https://musl.cc/aarch64-linux-musl-cross.tgz \
+ -O /tmp/linux-musl-cross.tgz \
+ && cd /usr/bin && tar -xzf /tmp/linux-musl-cross.tgz ; fi
 
-# Install go and upx
-RUN apk add --no-cache  build-base
-RUN wget ${UPX_URL}/v${UPX_VERSION}/upx-${UPX_VERSION}-${TARGETARCH}_${TARGETOS}.tar.xz \
-    -O /tmp/upx.tar.xz \
- && tar -xf /tmp/upx.tar.xz -C /usr/local/bin
+# Build plakar
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+ CC=/usr/bin/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc; fi \
+ && CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH CC=$CC \
+ go install -v -ldflags='-w -s' \
+ github.com/poolpOrg/plakar/cmd/plakar@${PLAKAR_VERSION}
 
-# Configure Go
-#ENV GOROOT /usr/lib/go
-#ENV GOPATH /go
-#ENV PATH /go/bin:$PATH
-#RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
+RUN PLAKAR=$(find /go -type f -name plakar) \
+ && mv ${PLAKAR} /usr/local/bin/plakar
 
-# Build and install plakar
-WORKDIR /app
-COPY . /app
-RUN GOOS=$TARGETOS GOARCH=$TARGETARCH \
- go install -ldflags="-w -s" -v github.com/poolpOrg/plakar/cmd/plakar@${PLAKAR_VERSION}
-
-# Run upx on plakar
-RUN /usr/local/bin/upx-${UPX_VERSION}-${TARGETARCH}_${TARGETOS}/upx /go/bin/plakar
+# Compress plakar
+RUN upx /usr/local/bin/plakar
 
 # Build final image
 FROM alpine:3.15
+
 ARG USER=plakar
 ENV HOME /home/$USER
 
-COPY --from=builder /go/bin/plakar /usr/bin/
+# Copy plakar from builder
+COPY --from=builder /usr/local/bin/plakar /usr/bin/
+
+# Copy entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+
+# Add $USER
 RUN adduser -D $USER
 RUN chown $USER /usr/bin/plakar /docker-entrypoint.sh \
  && chmod +x /docker-entrypoint.sh
 
 USER $USER
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["plakar"]
