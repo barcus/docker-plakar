@@ -1,0 +1,24 @@
+## docker-compose plakar server
+version: '3'
+services:
+  plakar-client1:
+    image: barcus/plakar
+    volumes:
+      - /data/plakar:/plakar
+    environment:
+      - INIT=false
+      - P_PATH=/plakar/client1
+    command: plakar on /plakar/client1 server
+    ports:
+      - 9001:9876
+  plakar-client2:
+    image: barcus/plakar
+    volumes:
+      - /data/plakar:/plakar
+    environment:
+      - INIT=false
+      - P_PATH=/plakar/client2
+    command: plakar on /plakar/client2 server
+    ports:
+      - 9002:9876
+#EOF
