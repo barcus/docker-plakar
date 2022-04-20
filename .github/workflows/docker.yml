@@ -35,9 +35,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
         name: Set env
-        run: echo "PLAKAR_URL=https://github.com/poolpOrg/plakar" >> $GITHUB_ENV \
-             && echo "PLAKAR_SHA=$(git ls-remote $PLAKAR_URL main)" >> $GITHUB_ENV \
-             && echo "PLAKAR_SHA_SHORT=$(echo $PLAKAR_SHA | awk '{ print substr($1,1,10) }')"  >> $GITHUB_ENV \
+        run: && echo "PLAKAR_SHA=$(git ls-remote https://github.com/poolpOrg/plakar  main | awk '{ print substr($1,1,10) }')" >> $GITHUB_ENV \
              && echo "BUILD_DATE=$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")" >> $GITHUB_ENV \
              && echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       -
@@ -48,10 +46,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: barcus/plakar:latest
-          build-args: |
-            PLAKAR_SHA=${{ env.PLAKAR_SHA }}
-            BUILD_DATE=${{ env.BUILD_DATE }}
-            VCS_REF=${{ env.VCS_REF }}
       -
         name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v3.0.0

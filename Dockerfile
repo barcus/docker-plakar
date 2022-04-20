@@ -30,6 +30,9 @@ RUN upx /usr/local/bin/plakar
 FROM alpine:3.15
 
 ARG PLAKAR_SHA
+ARG BUILD_DATE
+ARG VCS_REF
+
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="docker-plakar" \
