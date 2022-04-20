@@ -1,14 +1,6 @@
 # Build plakar from golang image
-FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
-
-ARG PLAKAR_SHA
-
-LABEL maintainer="barcus@tou.nu" \
-      org.label-schema.schema-version="1.0" \
-      org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name="docker-plakar" \
-      org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.version=$PLAKAR_SHA
+#FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
+FROM golang:1.18.1-alpine as builder
 
 ARG PLAKAR_VERSION=main
 ARG TARGETOS TARGETARCH
@@ -37,6 +29,14 @@ RUN upx /usr/local/bin/plakar
 
 # Build final image
 FROM alpine:3.15
+
+ARG PLAKAR_SHA
+LABEL org.label-schema.schema-version="1.0" \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="docker-plakar" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      io.plakar.version=$PLAKAR_SHA \
+      io.plakar.image.authors="barcus@tou.nu"
 
 ARG USER=plakar
 ENV HOME /home/$USER

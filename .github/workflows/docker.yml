@@ -35,7 +35,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
         name: Set env
-        run: echo "PLAKAR_SHA=$(git ls-remote https://github.com/poolpOrg/plakar main | awk '{ print $1 }')"  >> $GITHUB_ENV \
+        run: echo "PLAKAR_URL=https://github.com/poolpOrg/plakar" >> $GITHUB_ENV \
+             && echo "PLAKAR_SHA=$(git ls-remote $PLAKAR_URL main)" >> $GITHUB_ENV \
+             && echo "PLAKAR_SHA_SHORT=$(echo $PLAKAR_SHA | awk '{ print substr($1,1,10) }')"  >> $GITHUB_ENV \
              && echo "BUILD_DATE=$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")" >> $GITHUB_ENV \
              && echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       -
