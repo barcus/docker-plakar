@@ -1,6 +1,5 @@
 # Build plakar from golang image
-#FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
-FROM golang:1.18.1-alpine as builder
+FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
 
 ARG PLAKAR_VERSION=main
 ARG TARGETOS TARGETARCH
