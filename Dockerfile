@@ -4,7 +4,11 @@ FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
 ARG PLAKAR_SHA
 
 LABEL maintainer="barcus@tou.nu" \
-      io.plakar.version=$PLAKAR_SHA
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name=docker-plakar \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.version=$PLAKAR_SHA
 
 ARG PLAKAR_VERSION=main
 ARG TARGETOS TARGETARCH
