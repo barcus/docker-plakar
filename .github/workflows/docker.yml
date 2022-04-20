@@ -48,7 +48,10 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: barcus/plakar:latest
-          build-args: PLAKAR_SHA=$PLAKAR_SHA BUILD_DATE=$BUILD_DATE VCS_REF=$VCS_REF
+          build-args: |
+            PLAKAR_SHA=${{ env.PLAKAR_SHA }}
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VCS_REF=${{ env.VCS_REF }}
       -
         name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v3.0.0
