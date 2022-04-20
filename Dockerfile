@@ -1,7 +1,10 @@
 # Build plakar from golang image
 FROM --platform=$BUILDPLATFORM golang:1.18.1-alpine as builder
 
-LABEL maintainer="barcus@tou.nu"
+ARG PLAKAR_SHA
+
+LABEL maintainer="barcus@tou.nu" \
+      io.plakar.version=$PLAKAR_SHA
 
 ARG PLAKAR_VERSION=main
 ARG TARGETOS TARGETARCH
