@@ -29,8 +29,8 @@ RUN upx /usr/local/bin/plakar
 # Build final image
 FROM alpine:3.15
 
-ARG PLAKAR_SHA
-ARG BUILD_DATE
+#ARG PLAKAR_SHA
+#ARG BUILD_DATE
 ARG VCS_REF
 
 LABEL org.label-schema.schema-version="1.0" \
