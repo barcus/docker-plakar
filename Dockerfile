@@ -34,10 +34,13 @@ ARG BUILD_DATE
 ARG VCS_REF
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name="docker-plakar" \
+      org.label-schema.name="barcus/plakar" \
+      org.label-schema.description="Docker image for Plakar" \
       org.label-schema.vcs-ref=$VCS_REF \
-      io.plakar.version=$PLAKAR_SHA \
-      io.plakar.image.authors="barcus@tou.nu"
+      org.label-schema.vcs-url="https://github.com/barcus/docker-plakar" \
+      org.label-schema.url="https://plakar.io" \
+      org.label-schema.version=$PLAKAR_SHA \
+      org.label-schema.image.authors="barcus@tou.nu"
 
 ARG USER=plakar
 ENV HOME /home/$USER
