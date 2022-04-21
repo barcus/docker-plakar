@@ -36,7 +36,7 @@ jobs:
       -
         name: Set env
         run: |
-          echo "PLAKAR_SHA=$(git ls-remote https://github.com/poolpOrg/plakar  main | awk '{ print substr($1,1,10) }')" >> $GITHUB_ENV \
+          echo "PLAKAR_SHA=$(git ls-remote https://github.com/poolpOrg/plakar  main | awk '{ print substr($1,1,7) }')" >> $GITHUB_ENV \
           && echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV \
           && echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       -
