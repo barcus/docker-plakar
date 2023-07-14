@@ -35,6 +35,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
         name: Set env
+        id: vars
         run: |
           echo "PLAKAR_SHA=$(git ls-remote https://github.com/poolpOrg/plakar  main | awk '{ print substr($1,1,7) }')" >> $GITHUB_ENV \
           && echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV \
@@ -44,9 +45,10 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v3
         with:
+          context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: barcus/plakar:latest
+          tags: barcus/plakar:latest, barcus/plakar:${{ steps.vars.outputs.VCS_REF}}
           build-args: |
             PLAKAR_SHA
             VCS_REF
