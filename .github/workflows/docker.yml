@@ -50,7 +50,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             barcus/plakar:latest
-            barcus/plakar:${{env.VCS_REF}}
+            barcus/plakar:${{env.PLAKAR_SHA}}
           build-args: |
             PLAKAR_SHA
             VCS_REF
